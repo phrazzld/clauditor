@@ -1,6 +1,7 @@
 use chrono::{DateTime, Duration, Local, Utc};
 use crate::types::SessionBlock;
 use std::path::{Path, PathBuf};
+use std::env;
 
 /// ANSI color constants for terminal output
 pub mod colors {
@@ -11,6 +12,28 @@ pub mod colors {
     pub const RED: &str = "\x1B[31m";
     pub const DIM: &str = "\x1B[2m";
     pub const RESET: &str = "\x1B[0m";
+}
+
+/// Check if the terminal supports colors.
+fn colors_enabled() -> bool {
+    if env::var("NO_COLOR").is_ok() {
+        return false;
+    }
+    if let Ok(term) = env::var("TERM") {
+        if term == "dumb" {
+            return false;
+        }
+    }
+    true
+}
+
+/// Conditionally colorize text.
+fn colorize(text: &str, color: &str) -> String {
+    if colors_enabled() {
+        format!("{}{}{}", color, text, colors::RESET)
+    } else {
+        text.to_string()
+    }
 }
 
 /// Get the terminal width in columns, defaulting to 80 if detection fails
@@ -236,16 +259,12 @@ pub fn format_duration(duration: Duration) -> String {
     
     // Apply color coding based on time remaining
     if total_minutes <= 30 {
-        // Red for <30m (urgent)
-        format!("{}{}{}", colors::RED, time_str, colors::RESET)
+        colorize(&time_str, colors::RED)
     } else if total_minutes <= 60 {
-        // Yellow for <=1h (warning)
-        format!("{}{}{}", colors::YELLOW, time_str, colors::RESET)
+        colorize(&time_str, colors::YELLOW)
     } else if total_minutes > 120 {
-        // Green for >2h (plenty of time)
-        format!("{}{}{}", colors::GREEN, time_str, colors::RESET)
+        colorize(&time_str, colors::GREEN)
     } else {
-        // No color for 1h-2h range
         time_str
     }
 }
@@ -272,19 +291,14 @@ pub fn format_burn_rate(burn_rate: f64) -> String {
     let rate_str = format!("{} tokens/min", format_number(burn_rate as u64));
     
     if burn_rate > 1_000_000.0 {
-        // Red for >1M/min (very high)
-        format!("{}{}{}", colors::RED, rate_str, colors::RESET)
+        colorize(&rate_str, colors::RED)
     } else if burn_rate > 500_000.0 {
-        // Orange for 500K-1M/min (high)
-        format!("{}{}{}", colors::ORANGE, rate_str, colors::RESET)
+        colorize(&rate_str, colors::ORANGE)
     } else if burn_rate > 100_000.0 {
-        // Yellow for 100K-500K/min (moderate)
-        format!("{}{}{}", colors::YELLOW, rate_str, colors::RESET)
+        colorize(&rate_str, colors::YELLOW)
     } else if burn_rate < 50_000.0 {
-        // Green for <50K/min (sustainable)
-        format!("{}{}{}", colors::GREEN, rate_str, colors::RESET)
+        colorize(&rate_str, colors::GREEN)
     } else {
-        // No color for 50K-100K range (normal)
         rate_str
     }
 }
@@ -429,12 +443,12 @@ pub fn display_active_window(window: Option<&SessionBlock>) {
         }
         Some(w) => {
             // Display header with color
-            println!("{}Active billing window{}", colors::CYAN, colors::RESET);
+            println!("{}", colorize("Active billing window", colors::CYAN));
             
             // Display separator line
             let terminal_width = get_terminal_width() as usize;
             let separator = "─".repeat(terminal_width.min(80)); // Cap at 80 chars to avoid overly long lines
-            println!("{}{}{}", colors::DIM, separator, colors::RESET);
+            println!("{}", colorize(&separator, colors::DIM));
             println!();
             
             display_window(w, now);
@@ -469,12 +483,12 @@ mod tests {
     #[test]
     fn test_format_duration() {
         assert_eq!(format_duration(Duration::minutes(0)), "0m");
-        assert_eq!(format_duration(Duration::minutes(30)), "\x1B[31m30m\x1B[0m"); // Red
-        assert_eq!(format_duration(Duration::minutes(45)), "\x1B[33m45m\x1B[0m"); // Yellow
-        assert_eq!(format_duration(Duration::minutes(60)), "\x1B[33m1h 0m\x1B[0m"); // Yellow (1h exactly)
-        assert_eq!(format_duration(Duration::minutes(90)), "1h 30m"); // No color
-        assert_eq!(format_duration(Duration::minutes(135)), "\x1B[32m2h 15m\x1B[0m"); // Green
-        assert_eq!(format_duration(Duration::minutes(180)), "\x1B[32m3h 0m\x1B[0m"); // Green
+        assert_eq!(format_duration(Duration::minutes(30)), colorize("30m", colors::RED));
+        assert_eq!(format_duration(Duration::minutes(45)), colorize("45m", colors::YELLOW));
+        assert_eq!(format_duration(Duration::minutes(60)), colorize("1h 0m", colors::YELLOW));
+        assert_eq!(format_duration(Duration::minutes(90)), "1h 30m");
+        assert_eq!(format_duration(Duration::minutes(135)), colorize("2h 15m", colors::GREEN));
+        assert_eq!(format_duration(Duration::minutes(180)), colorize("3h 0m", colors::GREEN));
     }
     
     #[test]
@@ -490,18 +504,17 @@ mod tests {
     fn test_format_burn_rate() {
         // Normal rate (no color)
         assert_eq!(format_burn_rate(100.0), "100 tokens/min");
-        assert_eq!(format_burn_rate(50000.0), "50000 tokens/min");
-        assert_eq!(format_burn_rate(499999.0), "499999 tokens/min");
+        assert_eq!(format_burn_rate(50000.0), "50,000 tokens/min");
+        assert_eq!(format_burn_rate(100_000.0), "100,000 tokens/min");
         
-        // High rate (yellow)
-        assert_eq!(format_burn_rate(500001.0), "\x1B[33m500001 tokens/min\x1B[0m");
-        assert_eq!(format_burn_rate(750000.0), "\x1B[33m750000 tokens/min\x1B[0m");
-        assert_eq!(format_burn_rate(999999.0), "\x1B[33m999999 tokens/min\x1B[0m");
+        // Moderate rate (yellow)
+        assert_eq!(format_burn_rate(100_001.0), colorize("100,001 tokens/min", colors::YELLOW));
         
-        // Extremely high rate (red)
-        assert_eq!(format_burn_rate(1000001.0), "\x1B[31m1000001 tokens/min\x1B[0m");
-        assert_eq!(format_burn_rate(2000000.0), "\x1B[31m2000000 tokens/min\x1B[0m");
-        assert_eq!(format_burn_rate(5000000.0), "\x1B[31m5000000 tokens/min\x1B[0m");
+        // High rate (orange)
+        assert_eq!(format_burn_rate(500_001.0), colorize("500,001 tokens/min", colors::ORANGE));
+
+        // Very high rate (red)
+        assert_eq!(format_burn_rate(1_000_001.0), colorize("1,000,001 tokens/min", colors::RED));
     }
     
     #[test]

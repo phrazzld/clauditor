@@ -1,8 +1,33 @@
-# Clauditor Implementation TODO
+# Clauditor Quality Gates TODO
+
+This document outlines the design and implementation of a quality assurance strategy for `clauditor`, using a combination of local Git hooks and automated GitHub Actions.
+
+## Phase 1: Local Quality Gates (Git Hooks)
+
+Implement a `pre-commit` hook to ensure that all code committed to the repository meets a baseline level of quality. This prevents common issues from ever entering the codebase.
+
+- [x] **Setup `pre-commit` Framework**
+- [x] **Add Core Checks to `pre-commit` Hook**
+
+## Phase 2: Automated CI/CD Pipeline (GitHub Actions)
+
+Create a GitHub Actions workflow (`.github/workflows/ci.yml`) that runs on every push and pull request to the `master` branch.
+
+- [x] **Create Base CI Workflow**
+- [x] **Implement Core CI Checks**
+- [x] **Add Advanced Quality Gates**
+    - [x] Code Coverage
+    - [ ] Code Complexity
+    - [ ] Line Count Limits
+
+## Phase 3: Automated Release Workflow
+
+Create a separate GitHub Actions workflow for releases (`.github/workflows/release.yml`) that automates the process of creating and publishing new versions.
+
+- [x] **Create Release Workflow**
+- [x] **Automate Release Artifacts**
 
 ## Pending Tasks
-
-- [ ] Add fallback for terminals without color support (check `TERM=dumb` or `NO_COLOR`).
 - [ ] Update display tests for new format.
 - [ ] Fix failing tests for `clean_project_paths`.
 - [ ] Optimize release build (binary size, strip debug symbols).
@@ -19,7 +44,7 @@
 ---
 
 ## Completed Tasks
-
+- [x] **(Critical)** Add fallback for terminals without color support.
 - [x] **(Critical)** Fixed vertical alignment of percentages in the display.
 - [x] **(Critical)** Refactored billing model to a single account-wide window.
 - [x] **(Critical)** Fixed window calculation to be based on recent activity.
