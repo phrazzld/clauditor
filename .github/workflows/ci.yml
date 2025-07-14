@@ -64,3 +64,6 @@ jobs:
       
       - name: Check cyclomatic complexity
         run: cargo cyclomatic-complexity --threshold 10
+
+      - name: Check line counts
+        run: ./.github/scripts/check-line-counts.sh
