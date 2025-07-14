@@ -34,8 +34,8 @@ jobs:
     - name: Lint
       run: cargo clippy -- -D warnings
 
-  coverage:
-    name: Code Coverage
+  analysis:
+    name: Code Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -48,14 +48,19 @@ jobs:
           profile: minimal
           override: true
       
-      - name: Install tarpaulin
-        run: cargo install cargo-tarpaulin
+      - name: Install analysis tools
+        run: |
+          cargo install cargo-tarpaulin
+          cargo install cargo-cyclomatic-complexity
 
-      - name: Run coverage
+      - name: Run code coverage
         run: cargo tarpaulin --out Xml
 
-      - name: Upload to codecov.io
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
+      
+      - name: Check cyclomatic complexity
+        run: cargo cyclomatic-complexity --threshold 10
