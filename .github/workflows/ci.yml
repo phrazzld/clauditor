@@ -47,7 +47,7 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
-      
+
       - name: Install analysis tools
         run: |
           cargo install cargo-tarpaulin
@@ -57,11 +57,11 @@ jobs:
         run: cargo tarpaulin --out Xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-      
+
       - name: Check cyclomatic complexity
         run: cargo cyclomatic-complexity --threshold 10
 
