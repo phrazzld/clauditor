@@ -17,7 +17,7 @@ pub fn load_and_group_sessions() -> Result<Option<SessionBlock>> {
     // Convert sessions to entries with project info
     let mut entries_with_projects = Vec::new();
     for session in sessions {
-        let entry_count = session.entries.len();
+        let _entry_count = session.entries.len();
         // eprintln!("[DEBUG] load_and_group_sessions: Session {} has {} entries", session.project, entry_count);
         
         for entry in session.entries {
@@ -78,7 +78,7 @@ pub fn load_and_group_sessions_incremental(scanner: &mut SessionScanner) -> Resu
     // eprintln!("[DEBUG] load_and_group_sessions_incremental: Current time: {}", now);
     
     // Check if there's an active window based on the new entries
-    if let Some(window_period) = find_active_window_period(&all_entries, now) {
+    if let Some(_window_period) = find_active_window_period(&all_entries, now) {
         // eprintln!("[DEBUG] load_and_group_sessions_incremental: Active window detected: {} to {}, doing FULL reload", window_period.0, window_period.1);
         // Active window detected - do a FULL reload to get all projects
         return get_active_billing_window();
@@ -121,6 +121,7 @@ pub fn get_active_billing_window() -> Result<Option<SessionBlock>> {
 }
 
 /// Get summary statistics for the active window
+#[allow(dead_code)]
 pub struct ActiveWindowSummary {
     pub has_active_window: bool,
     pub total_tokens: u64,
@@ -128,6 +129,7 @@ pub struct ActiveWindowSummary {
 }
 
 impl ActiveWindowSummary {
+    #[allow(dead_code)]
     pub fn from_window(window: Option<&SessionBlock>) -> Self {
         match window {
             Some(w) => Self {

@@ -124,6 +124,7 @@ pub fn parse_file_with_position(path: &Path) -> Result<(Vec<UsageEntry>, u64)> {
 }
 
 /// Parse multiple JSONL files and return all entries
+#[allow(dead_code)]
 pub fn parse_files(paths: &[&Path]) -> Result<Vec<UsageEntry>> {
     let mut all_entries = Vec::new();
     

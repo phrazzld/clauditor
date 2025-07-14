@@ -6,8 +6,8 @@ use anyhow::{Context, Result};
 /// File system event that we care about
 #[derive(Debug, Clone)]
 pub enum FileEvent {
-    Modified(PathBuf),
-    Created(PathBuf),
+    Modified(()),
+    Created(()),
 }
 
 /// Watch Claude session directories for JSONL file changes
@@ -81,7 +81,7 @@ fn filter_event(event: Event) -> Option<FileEvent> {
             // File was modified
             for path in &event.paths {
                 if is_jsonl_file(path) {
-                    return Some(FileEvent::Modified(path.clone()));
+                    return Some(FileEvent::Modified(()));
                 }
             }
         }
@@ -89,7 +89,7 @@ fn filter_event(event: Event) -> Option<FileEvent> {
             // File was created
             for path in &event.paths {
                 if is_jsonl_file(path) {
-                    return Some(FileEvent::Created(path.clone()));
+                    return Some(FileEvent::Created(()));
                 }
             }
         }
@@ -152,7 +152,7 @@ mod tests {
         
         // Verify we got a creation event for our file
         let has_creation = events.iter().any(|e| {
-            matches!(e, FileEvent::Created(p) if p.ends_with("test.jsonl"))
+            matches!(e, FileEvent::Created(_))
         });
         assert!(has_creation, "Should have creation event for test.jsonl");
         

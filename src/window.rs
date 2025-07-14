@@ -22,6 +22,7 @@ const SESSION_DURATION_HOURS: i64 = 5;
 /// 2. Create a single 5-hour window starting from floor_to_hour of that entry
 /// 3. Include ALL entries within that 5-hour period
 /// 4. Mark window as active if last activity was within 5 hours
+#[allow(dead_code)]
 pub fn group_into_single_window(entries: Vec<UsageEntry>) -> Option<SessionBlock> {
     if entries.is_empty() {
         return None;
@@ -60,6 +61,7 @@ pub fn group_into_single_window(entries: Vec<UsageEntry>) -> Option<SessionBlock
 /// - Last activity: Timestamp of the most recent entry
 /// - Token counts: Aggregated from all entries in the window
 /// - Projects: Usage broken down by project
+#[allow(dead_code)]
 fn create_window(start_time: DateTime<Utc>, entries: &[UsageEntry]) -> Option<SessionBlock> {
     if entries.is_empty() {
         return None;
@@ -105,6 +107,7 @@ fn create_window(start_time: DateTime<Utc>, entries: &[UsageEntry]) -> Option<Se
 }
 
 /// Extract project name from entry (placeholder implementation)
+#[allow(dead_code)]
 fn extract_project_name(entry: &UsageEntry) -> String {
     // In real implementation, this would be parsed from the file path
     // For now, use model name as a placeholder to differentiate

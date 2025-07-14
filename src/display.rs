@@ -59,6 +59,7 @@ pub fn get_terminal_width() -> u16 {
 /// let cleaned = clean_project_paths(&paths);
 /// assert_eq!(cleaned, vec!["foo", "bar"]);
 /// ```
+#[allow(dead_code)]
 pub fn clean_project_paths(paths: &[String]) -> Vec<String> {
     use std::env;
     
@@ -144,6 +145,7 @@ pub fn clean_project_paths(paths: &[String]) -> Vec<String> {
 }
 
 /// Find the longest common prefix among paths
+#[allow(dead_code)]
 fn find_common_prefix(paths: &[PathBuf]) -> Option<PathBuf> {
     if paths.is_empty() {
         return None;
@@ -196,6 +198,7 @@ fn find_common_prefix(paths: &[PathBuf]) -> Option<PathBuf> {
 }
 
 /// Clean a single path
+#[allow(dead_code)]
 fn clean_single_path(path: &Path, home_dir: Option<&PathBuf>) -> String {
     // Just return the last component (project name) for single paths
     path.file_name()
@@ -211,6 +214,8 @@ fn clean_single_path(path: &Path, home_dir: Option<&PathBuf>) -> String {
             path.display().to_string()
         })
 }
+
+
 
 /// Format a duration as "Xh Ym" or "Xm" for durations under an hour with color coding
 pub fn format_duration(duration: Duration) -> String {

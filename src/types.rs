@@ -60,6 +60,7 @@ impl TokenCounts {
 }
 
 /// Information about a single session file
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct SessionFile {
     pub path: String,

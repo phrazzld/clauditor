@@ -41,6 +41,7 @@ impl FilePositionTracker {
     }
     
     /// Check if file has been truncated or replaced
+    #[allow(dead_code)]
     pub fn validate_position(&self, path: &Path, current_size: u64) -> u64 {
         let stored_position = self.get_position(path);
         

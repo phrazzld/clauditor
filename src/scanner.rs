@@ -31,6 +31,7 @@ impl SessionScanner {
     }
     
     /// Set how many hours back to scan
+    #[allow(dead_code)]
     pub fn with_hours_back(mut self, hours: i64) -> Self {
         self.hours_back = hours;
         self
@@ -79,7 +80,7 @@ impl SessionScanner {
                     
                     if !entries.is_empty() {
                         // Log first and last entry timestamps
-                        if let (Some(first), Some(last)) = (entries.first(), entries.last()) {
+                        if let (Some(_first), Some(_last)) = (entries.first(), entries.last()) {
                             // eprintln!("[DEBUG] load_sessions: File {} entries span {} to {}", 
                             //     file_path.display(), first.timestamp, last.timestamp);
                         }
@@ -150,6 +151,7 @@ impl SessionScanner {
     }
     
     /// Load all entries from all sessions (flattened)
+    #[allow(dead_code)]
     pub fn load_all_entries(&mut self) -> Result<Vec<UsageEntry>> {
         let sessions = self.load_sessions()?;
         let mut all_entries = Vec::new();
