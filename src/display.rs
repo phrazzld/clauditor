@@ -363,49 +363,57 @@ pub fn display_window(window: &SessionBlock, now: DateTime<Utc>) {
     let mut projects = window.projects.clone();
     projects.sort_by(|a, b| b.token_counts.total().cmp(&a.token_counts.total()));
     
-    // Get terminal width for dynamic alignment
     let terminal_width = get_terminal_width() as usize;
-    let tokens_suffix = " tokens";
     let total_tokens = window.token_counts.total();
-    
-    for project in &projects {
-        let project_tokens = project.token_counts.total();
-        let token_count_str = format_number(project_tokens);
-        let token_display = format!("{} {}", token_count_str, tokens_suffix.trim());
-        
-        // Calculate percentage
+
+    // First pass: Collect data and determine column widths
+    let project_data: Vec<_> = projects.iter().map(|p| {
+        let name = extract_display_name(&p.name);
+        let tokens = p.token_counts.total();
         let percentage = if total_tokens > 0 {
-            (project_tokens as f64 / total_tokens as f64 * 100.0) as u32
+            (tokens as f64 / total_tokens as f64 * 100.0) as u32
         } else {
             0
         };
-        let percentage_str = format!("{}%", percentage);
-        
-        // Calculate available space
-        let token_display_len = token_display.len();
-        let percentage_len = percentage_str.len();
-        
-        // Calculate max project name length (accounting for percentage + spacing)
-        let min_spacing = 2; // Minimum spaces between components
-        let max_name_len = terminal_width.saturating_sub(token_display_len + percentage_len + min_spacing * 2);
-        
-        // Extract a meaningful project name from the full path
-        let display_name = extract_display_name(&project.name);
-        
-        // Truncate project name if necessary
-        let project_name = if display_name.len() > max_name_len && max_name_len > 3 {
-            format!("{}...", &display_name[..max_name_len - 3])
+        (name, tokens, percentage)
+    }).collect();
+
+    let max_token_len = project_data.iter()
+        .map(|(_, tokens, _)| format!("{} tokens", format_number(*tokens)).len())
+        .max().unwrap_or(0);
+
+    let percent_col_width = 4; // "100%"
+
+    // Second pass: Display the formatted data
+    for (name, tokens, percentage) in &project_data {
+        let token_display = format!("{} tokens", format_number(*tokens));
+        let percentage_display = format!("{}%", percentage);
+
+        // Create a stats block with fixed-width, right-aligned columns
+        let stats_part = format!(
+            "{:>width_p$}  {:>width_t$}",
+            percentage_display,
+            token_display,
+            width_p = percent_col_width,
+            width_t = max_token_len
+        );
+
+        // Calculate how much space the project name can take
+        let max_name_width = terminal_width.saturating_sub(stats_part.len() + 1); // +1 for padding
+
+        let truncated_name = if name.len() > max_name_width {
+            format!("{}...", &name[..max_name_width.saturating_sub(3)])
         } else {
-            display_name
+            name.clone()
         };
         
-        // Calculate padding for alignment
-        let used_len = project_name.len() + percentage_len + token_display_len + min_spacing * 2;
-        let padding_len = terminal_width.saturating_sub(used_len);
+        let padding_len = terminal_width
+            .saturating_sub(truncated_name.len())
+            .saturating_sub(stats_part.len());
+
         let padding = " ".repeat(padding_len);
-        
-        // Print with percentage right-aligned before token count
-        println!("{}{}{:>4}  {}", project_name, padding, percentage_str, token_display);
+
+        println!("{}{}{}", truncated_name, padding, stats_part);
     }
     
     println!();
