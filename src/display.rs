@@ -660,7 +660,7 @@ mod tests {
                     input_tokens: 1000,
                     output_tokens: 500,
                     cache_creation_tokens: 0,
-                    cache_read_tokens: 0,
+                    cache_read_input_tokens: 0,
                 },
                 entry_count: 10,
             }],

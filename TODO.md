@@ -28,8 +28,6 @@ Create a separate GitHub Actions workflow for releases (`.github/workflows/relea
 - [x] **Automate Release Artifacts**
 
 ## Pending Tasks
-- [ ] Update display tests for new format.
-- [ ] Fix failing tests for `clean_project_paths`.
 - [ ] Optimize release build (binary size, strip debug symbols).
 
 ## Future Enhancements
@@ -44,6 +42,8 @@ Create a separate GitHub Actions workflow for releases (`.github/workflows/relea
 ---
 
 ## Completed Tasks
+- [x] **(Critical)** Update display tests for new format.
+- [x] **(Critical)** Fix failing tests for `clean_project_paths`.
 - [x] **(Critical)** Add fallback for terminals without color support.
 - [x] **(Critical)** Fixed vertical alignment of percentages in the display.
 - [x] **(Critical)** Refactored billing model to a single account-wide window.
