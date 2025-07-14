@@ -18,7 +18,7 @@ Create a GitHub Actions workflow (`.github/workflows/ci.yml`) that runs on every
 - [x] **Add Advanced Quality Gates**
     - [x] Code Coverage
     - [x] Code Complexity
-    - [ ] Line Count Limits
+    - [x] Line Count Limits
 
 ## Phase 3: Automated Release Workflow
 
