@@ -27,9 +27,6 @@ Create a separate GitHub Actions workflow for releases (`.github/workflows/relea
 - [x] **Create Release Workflow**
 - [x] **Automate Release Artifacts**
 
-## Pending Tasks
-- [ ] Optimize release build (binary size, strip debug symbols).
-
 ## Future Enhancements
 
 - [ ] Add `--color` flag for explicit color control.
@@ -42,6 +39,7 @@ Create a separate GitHub Actions workflow for releases (`.github/workflows/relea
 ---
 
 ## Completed Tasks
+- [x] **(Critical)** Optimize release build (binary size, strip debug symbols).
 - [x] **(Critical)** Update display tests for new format.
 - [x] **(Critical)** Fix failing tests for `clean_project_paths`.
 - [x] **(Critical)** Add fallback for terminals without color support.
