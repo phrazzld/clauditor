@@ -19,12 +19,37 @@ use std::thread;
 #[command(name = "clauditor")]
 #[command(version)]
 #[command(about = "Track active Claude Code billing windows across multiple sessions", long_about = None)]
-struct Cli {}
+struct Cli {
+    /// Watch for file changes and continuously update the display
+    #[arg(short, long)]
+    watch: bool,
+}
 
 fn main() -> Result<()> {
-    // Parse command line arguments
-    let _cli = Cli::parse();
-    
+    let cli = Cli::parse();
+
+    if cli.watch {
+        run_watch_mode()
+    } else {
+        run_one_shot_mode()
+    }
+}
+
+/// Run once, print the current billing window, and exit.
+fn run_one_shot_mode() -> Result<()> {
+    match coordinator::get_active_billing_window() {
+        Ok(window) => {
+            display::display_active_window(window.as_ref());
+        }
+        Err(e) => {
+            eprintln!("Error loading sessions: {}", e);
+        }
+    }
+    Ok(())
+}
+
+/// Run in a continuous loop, watching for file changes.
+fn run_watch_mode() -> Result<()> {
     // Create persistent scanner with position tracking
     let mut scanner = scanner::SessionScanner::new();
     let mut current_window: Option<types::SessionBlock> = None;
