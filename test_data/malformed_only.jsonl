@@ -1,0 +1,11 @@
+this is not JSON at all
+{broken json
+{"missing":"closing bracket"
+{"timestamp":"not-a-date","message":{"bad":"structure"}}
+null
+undefined
+[1,2,3]
+"just a string"
+123456789
+true
+false
